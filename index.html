@@ -8,116 +8,115 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #FFDEE9;
-            background: linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: #333;
-        }
-        .container {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-            max-width: 90%;
-            width: 650px; /* Increased container width */
-        }
-        h1 {
-            font-size: 3rem; /* Increased font size for the title */
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #4A4A4A;
-        }
-        .board {
-            display: grid;
-            grid-template-rows: repeat(6, 1fr);
-            gap: 0.75rem; /* Adjusted gap for bigger tiles */
-            margin-bottom: 2rem;
-        }
-        .row {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.75rem; /* Adjusted gap for bigger tiles */
-        }
-        .box {
-            width: 100%;
-            aspect-ratio: 1 / 1; /* This makes the box square */
-            background-color: #e0e0e0;
-            border: 2px solid #ccc;
-            border-radius: 0.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5rem; /* Increased font size for letters */
-            font-weight: 700;
-            text-transform: uppercase;
-            transition: transform 0.3s ease, background-color 0.6s ease;
-        }
-        .box.correct {
-            background-color: #6aaa64;
-            border-color: #6aaa64;
-            color: white;
-            transform: scale(1.05);
-        }
-        .box.present {
-            background-color: #c9b458;
-            border-color: #c9b458;
-            color: white;
-            transform: scale(1.05);
-        }
-        .box.absent {
-            background-color: #787c7e;
-            border-color: #787c7e;
-            color: white;
-        }
-        .keyboard {
-            display: grid;
-            gap: 0.6rem; /* Adjusted gap for bigger keys */
-        }
-        .keyboard-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.6rem; /* Adjusted gap for bigger keys */
-        }
-        .key {
-            background-color: #d3d6da;
-            border-radius: 0.5rem;
-            padding: 1rem 0.7rem; /* Increased padding for bigger keys */
-            font-size: 1.2rem; /* Increased font size for keys */
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s;
-            min-width: 2.5rem; /* Adjusted min-width */
-        }
-        .key:active {
-            transform: scale(0.95);
-        }
-        .key.large {
-            min-width: 5rem; /* Adjusted min-width for large keys */
-        }
-        .key.correct {
-            background-color: #6aaa64;
-            color: white;
-        }
-        .key.present {
-            background-color: #c9b458;
-            color: white;
-        }
-        .key.absent {
-            background-color: #787c7e;
-            color: white;
-        }
+      body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #333;
+    margin: 0;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px; /* scales down on mobile */
+}
+
+h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #4A4A4A;
+}
+
+.board {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+}
+
+.box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #e0e0e0;
+    border: 2px solid #ccc;
+    border-radius: 0.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(1.2rem, 5vw, 2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: transform 0.3s ease, background-color 0.6s ease;
+}
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.key {
+    background-color: #d3d6da;
+    border-radius: 0.25rem;
+    padding: 0.75rem 0;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex: 1;
+    max-width: 9%; /* keeps keys consistent size */
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.key.large {
+    flex: 1.5;       /* wider Enter/Backspace */
+    max-width: none; /* allow stretch */
+}
+
+.key:active {
+    transform: scale(0.95);
+}
+
+/* Color states */
+.key.correct {
+    background-color: #6aaa64;
+    color: white;
+}
+.key.present {
+    background-color: #c9b458;
+    color: white;
+}
+.key.absent {
+    background-color: #787c7e;
+    color: white;
+}
+
         #message-box {
             position: fixed;
             top: 1rem;

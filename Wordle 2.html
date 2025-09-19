@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #FFDEE9;
+            background: linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #333;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            max-width: 90%;
+            width: 650px; /* Increased container width */
+        }
+        h1 {
+            font-size: 3rem; /* Increased font size for the title */
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #4A4A4A;
+        }
+        .board {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 0.75rem; /* Adjusted gap for bigger tiles */
+            margin-bottom: 2rem;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem; /* Adjusted gap for bigger tiles */
+        }
+        .box {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* This makes the box square */
+            background-color: #e0e0e0;
+            border: 2px solid #ccc;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem; /* Increased font size for letters */
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: transform 0.3s ease, background-color 0.6s ease;
+        }
+        .box.correct {
+            background-color: #6aaa64;
+            border-color: #6aaa64;
+            color: white;
+            transform: scale(1.05);
+        }
+        .box.present {
+            background-color: #c9b458;
+            border-color: #c9b458;
+            color: white;
+            transform: scale(1.05);
+        }
+        .box.absent {
+            background-color: #787c7e;
+            border-color: #787c7e;
+            color: white;
+        }
+        .keyboard {
+            display: grid;
+            gap: 0.6rem; /* Adjusted gap for bigger keys */
+        }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem; /* Adjusted gap for bigger keys */
+        }
+        .key {
+            background-color: #d3d6da;
+            border-radius: 0.5rem;
+            padding: 1rem 0.7rem; /* Increased padding for bigger keys */
+            font-size: 1.2rem; /* Increased font size for keys */
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+            min-width: 2.5rem; /* Adjusted min-width */
+        }
+        .key:active {
+            transform: scale(0.95);
+        }
+        .key.large {
+            min-width: 5rem; /* Adjusted min-width for large keys */
+        }
+        .key.correct {
+            background-color: #6aaa64;
+            color: white;
+        }
+        .key.present {
+            background-color: #c9b458;
+            color: white;
+        }
+        .key.absent {
+            background-color: #787c7e;
+            color: white;
+        }
+        #message-box {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            z-index: 10;
+        }
+        #victory-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2rem;
+            background-color: rgba(74, 74, 74, 0.9);
+            color: white;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+        .gift-link {
+            text-decoration: underline;
+            color: #d8c365;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center p-4">
+
+    <div id="message-box"></div>
+
+    <div class="container flex flex-col items-center">
+        <h1>Wordle</h1>
+        <div class="board" id="game-board"></div>
+
+        <div class="keyboard" id="keyboard">
+            <div class="keyboard-row">
+                <button class="key">q</button>
+                <button class="key">w</button>
+                <button class="key">e</button>
+                <button class="key">r</button>
+                <button class="key">t</button>
+                <button class="key">y</button>
+                <button class="key">u</button>
+                <button class="key">i</button>
+                <button class="key">o</button>
+                <button class="key">p</button>
+            </div>
+            <div class="keyboard-row">
+                <div style="flex-grow: 0.5;"></div>
+                <button class="key">a</button>
+                <button class="key">s</button>
+                <button class="key">d</button>
+                <button class="key">f</button>
+                <button class="key">g</button>
+                <button class="key">h</button>
+                <button class="key">j</button>
+                <button class="key">k</button>
+                <button class="key">l</button>
+                <div style="flex-grow: 0.5;"></div>
+            </div>
+            <div class="keyboard-row">
+                <button class="key large" id="enter-key">Enter</button>
+                <button class="key">z</button>
+                <button class="key">x</button>
+                <button class="key">c</button>
+                <button class="key">v</button>
+                <button class="key">b</button>
+                <button class="key">n</button>
+                <button class="key">m</button>
+                <button class="key large" id="backspace-key"><i class="fas fa-backspace"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="victory-message">
+        <h2 class="text-3xl font-bold mb-4">You Won!</h2>
+        <p class="mt-4 text-lg">Set your GPS for:</p>
+        <p class="text-4xl font-extrabold mt-2 text-yellow-300">AMERICAN AIRLINES CENTER</p>
+
+        <a class="gift-link" href="https://nateland.com/pages/tour-dates" target="_blank">Click here to reveal your gift. Open together!</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const answer = 'jokes';
+            let currentRow = 0;
+            let currentColumn = 0;
+            const maxRows = 6;
+            const maxCols = 5;
+            const board = document.getElementById('game-board');
+            const keyboard = document.getElementById('keyboard');
+            const messageBox = document.getElementById('message-box');
+            const victoryMessage = document.getElementById('victory-message');
+
+            // Create the game board
+            for (let i = 0; i < maxRows; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                for (let j = 0; j < maxCols; j++) {
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    row.appendChild(box);
+                }
+                board.appendChild(row);
+            }
+
+            const rows = board.children;
+
+            // Show a temporary message
+            function showMessage(text) {
+                messageBox.textContent = text;
+                messageBox.style.display = 'block';
+                setTimeout(() => {
+                    messageBox.style.display = 'none';
+                }, 2000);
+            }
+
+            // Handle keyboard input
+            function handleKey(key) {
+                if (key.length === 1 && key.match(/[a-z]/i)) {
+                    if (currentColumn < maxCols) {
+                        const box = rows[currentRow].children[currentColumn];
+                        box.textContent = key;
+                        currentColumn++;
+                    }
+                } else if (key === 'Enter') {
+                    if (currentColumn === maxCols) {
+                        checkGuess();
+                    } else {
+                        showMessage('Not enough letters');
+                    }
+                } else if (key === 'Backspace' || key === 'Delete') {
+                    if (currentColumn > 0) {
+                        currentColumn--;
+                        const box = rows[currentRow].children[currentColumn];
+                        box.textContent = '';
+                    }
+                }
+            }
+
+            // Handle virtual keyboard clicks
+            keyboard.addEventListener('click', (e) => {
+                const keyElement = e.target.closest('.key');
+                if (keyElement) {
+                    let key = keyElement.textContent.trim().toLowerCase();
+                    if (keyElement.id === 'backspace-key') {
+                        key = 'Backspace';
+                    } else if (keyElement.id === 'enter-key') {
+                        key = 'Enter';
+                    }
+                    handleKey(key);
+                }
+            });
+
+            // Handle physical keyboard key presses
+            document.addEventListener('keydown', (e) => {
+                handleKey(e.key);
+            });
+
+            // Check the guessed word
+            function checkGuess() {
+                const guessBoxes = rows[currentRow].children;
+                let guess = '';
+                for (let i = 0; i < maxCols; i++) {
+                    guess += guessBoxes[i].textContent.toLowerCase();
+                }
+
+                if (guess === answer) {
+                    for (let i = 0; i < maxCols; i++) {
+                        guessBoxes[i].classList.add('correct');
+                        const keyElement = document.querySelector(`.key[data-key="${guess[i]}"]`);
+                        if (keyElement) {
+                            keyElement.classList.remove('present', 'absent');
+                            keyElement.classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => {
+                        victoryMessage.style.display = 'block';
+                    }, 1000);
+                    return;
+                }
+
+                const answerLetters = answer.split('');
+                const guessLetters = guess.split('');
+
+                // Check for correct letters first
+                for (let i = 0; i < maxCols; i++) {
+                    const box = guessBoxes[i];
+                    const keyElement = document.querySelector(`.key[data-key="${guessLetters[i]}"]`);
+                    if (answerLetters[i] === guessLetters[i]) {
+                        box.classList.add('correct');
+                        if (keyElement) {
+                           keyElement.classList.remove('present', 'absent');
+                           keyElement.classList.add('correct');
+                        }
+                        answerLetters[i] = null; // Mark as used
+                    }
+                }
+
+                // Check for present and absent letters
+                for (let i = 0; i < maxCols; i++) {
+                    const box = guessBoxes[i];
+                    const keyElement = document.querySelector(`.key[data-key="${guessLetters[i]}"]`);
+                    if (!box.classList.contains('correct')) {
+                        const index = answerLetters.indexOf(guessLetters[i]);
+                        if (index !== -1) {
+                            box.classList.add('present');
+                            if (keyElement && !keyElement.classList.contains('correct')) {
+                                keyElement.classList.remove('absent');
+                                keyElement.classList.add('present');
+                            }
+                            answerLetters[index] = null; // Mark as used
+                        } else {
+                            box.classList.add('absent');
+                            if (keyElement && !keyElement.classList.contains('correct') && !keyElement.classList.contains('present')) {
+                                keyElement.classList.add('absent');
+                            }
+                        }
+                    }
+                }
+
+                currentRow++;
+                currentColumn = 0;
+
+                if (currentRow === maxRows) {
+                    showMessage(`You lost! The word was "${answer.toUpperCase()}"`);
+                }
+            }
+
+            // Assign data-key to keyboard buttons for easier lookup
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(key => {
+                key.dataset.key = key.textContent.trim().toLowerCase();
+            });
+        });
+    </script>
+</body>
+</html>
